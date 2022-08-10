@@ -2,10 +2,12 @@ import psycopg2
 import os
 
 
-def createtables():
+def createtables(conn):
 
-    uri = os.environ.get("PGCONNECTION")
-    conn = psycopg2.connect(uri)
+    # uri = os.environ.get("PGCONNECTION")
+    # uri = os.environ.get("PGCONNECTION")
+    # print(uri)
+    # conn = psycopg2.connect(uri)
     cursor = conn.cursor()
     try:
         TABLES = {}
@@ -41,4 +43,5 @@ def createtables():
         conn.close()
 
 
-createtables()
+# print(os.environ)
+# createtables()

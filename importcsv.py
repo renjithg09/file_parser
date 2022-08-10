@@ -4,6 +4,7 @@ import pandas as pd
 import psycopg2
 import psycopg2.extras as extras
 from datetime import datetime
+import tablecreate
 
 
 class csvhandler:
@@ -94,11 +95,12 @@ class csvhandler:
         try:
             # connect to the PostgreSQL server
             print("Connecting to the PostgreSQL database...")
-            uri = os.environ.get("PGCONNECTION")
-            # print(uri)
+            uri = os.environ.get("DB_URL")
+            print(uri)
             conn = psycopg2.connect(
                 uri
-            )  # "postgresql://postgres:admin@localhost/fileparser")
+                # "postgresql://postgres:admin@0.0.19.137/fileparser"
+            )  # "postgresql://postgres:admin@localhost/fileparser"
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
             sys.exit(1)
@@ -181,6 +183,7 @@ impfolder = ".\data"
 impfiles = ch.getthefiles(impfolder)
 
 impconn = ch.dbconnect()  # connect the db
+tablecreate.createtables(impconn)
 try:
     for ifile in impfiles:  # Loop through the folder where files are present
         impfilename = r"" + impfolder + "\\" + ifile
