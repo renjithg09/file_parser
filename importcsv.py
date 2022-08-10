@@ -108,7 +108,8 @@ class csvhandler:
     def isvalidcsvandgetdf(self, csvfilename):
         # Get the file name from whole path
         onlyfilename = os.path.split(csvfilename)[1]
-        calldata = pd.read_csv(csvfilename)
+        # Get the csv data, pass na_filter false to hand NA string
+        calldata = pd.read_csv(csvfilename, na_filter=False)
         df = pd.DataFrame(calldata)
         # Verify any manadatory columns missig in the csv file
         validationresult = self.verifymissingmandatorycolumns(df)
