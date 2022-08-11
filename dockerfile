@@ -3,10 +3,10 @@ FROM python:3.8-buster
 ADD importcsv.py .
 ADD tablecreate.py .
 
-RUN mkdir data
-ADD ./data data
-#ADD /data .
-
+#RUN mkdir /var/lib/postgresql/data/data
+#ADD data /var/lib/postgresql/data/data
+RUN mkdir -p /app/data
+ADD ./data /app/data
 #ADD create_tables.sql ./sql
 
 #RUN pip install --upgrade cython

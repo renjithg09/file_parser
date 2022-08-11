@@ -121,8 +121,8 @@ class csvhandler:
             uri = os.environ.get("DB_URL")
             print(uri)
             conn = psycopg2.connect(
-                # uri
-                "postgresql://postgres:admin@localhost/fileparser"
+                uri
+                #"postgresql://postgres:admin@localhost/fileparser"
             )
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -210,7 +210,9 @@ class csvhandler:
 
 ch = csvhandler()
 
-impfolder = ".\data"
+impfolder = "/app/data"
+#impfolder = ".\data"
+
 impfiles = ch.getthefiles(impfolder)
 
 impconn = ch.dbconnect()  # connect the db

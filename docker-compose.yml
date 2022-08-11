@@ -11,7 +11,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      - DB_URL=postgresql://postgres:admin@db:5432/fileparser
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=fileparser
