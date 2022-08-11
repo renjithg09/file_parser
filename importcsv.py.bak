@@ -6,6 +6,32 @@ import psycopg2.extras as extras
 from datetime import datetime
 import tablecreate
 
+
+def main():
+    ch = csvhandler()
+
+    impfolder = ".\data"
+
+    impfiles = ch.getthefiles(impfolder)
+
+    impconn = ch.dbconnect()  # connect the db
+    tablecreate.createtables(impconn)
+    try:
+        for ifile in impfiles:  # Loop through the folder where files are present
+            impfilename = r"" + impfolder + "\\" + ifile
+            if impconn:
+                if not ch.isfileareadyimported(ifile, impconn):
+                    # Verify file is already imported
+                    csvdf = ch.isvalidcsvandgetdf(
+                        impfilename
+                    )  # get the data from csv file
+                    if not csvdf.empty:
+                        ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
+
+    finally:
+        ch.closedbconnection  # close the conection
+
+
 class csvhandler:
     def __init__(self):
         self.totalrowcount = 0
@@ -116,18 +142,17 @@ class csvhandler:
         conn = None
         try:
             # connect to the PostgreSQL server
-            #print("Connecting to the PostgreSQL database...")
-            # Get the ps URI from env variable 
+            print("Connecting to the PostgreSQL database...")
             uri = os.environ.get("DB_URL")
-            #print(uri)
+            print(uri)
             conn = psycopg2.connect(
-                uri
-                # "postgresql://postgres:admin@localhost/fileparser"
+                #uri
+                "postgresql://postgres:admin@localhost/fileparser"
             )
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
             sys.exit(1)
-        #print("Connection successful")
+        print("Connection successful")
         return conn
 
     def isvalidcsvandgetdf(self, csvfilename):
@@ -207,25 +232,5 @@ class csvhandler:
     def closedbconnection(self):
         conn.close()
 
-ch = csvhandler()
 
-impfolder = "/app/data"
-
-impfiles = ch.getthefiles(impfolder)
-
-impconn = ch.dbconnect()  # connect the db
-tablecreate.createtables(impconn)
-try:
-    for ifile in impfiles:  # Loop through the folder where files are present
-        impfilename = r"" + impfolder + "/" + ifile
-        if impconn:
-            if not ch.isfileareadyimported(ifile, impconn):
-                # Verify file is already imported
-                csvdf = ch.isvalidcsvandgetdf(
-                    impfilename
-                )  # get the data from csv file
-                if not csvdf.empty:
-                    ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
-
-finally:
-    ch.closedbconnection  # close the conection
+main()
