@@ -41,5 +41,6 @@ def createtables(conn):
     finally:
         cursor.close()
 
+
 # print(os.environ)
 # createtables()

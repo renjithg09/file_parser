@@ -25,25 +25,27 @@ class csvhandler:
     )
 
     def renamenonmandatorycolumns(self, dtframe):
-        # List of non mandatory columns which are not in format. Given csv files has these many different type format hence included these.  
+        # List of non mandatory columns which are not in format. Given csv files has these many different type format hence included these.
         rename_dict = {
-            "first_name":("First Name","firstname","first"),
-            "last_name":("Last Name", "lastname","last"),
-            "zipcode":("zip","Zipcode")
+            "first_name": ("First Name", "firstname", "first"),
+            "last_name": ("Last Name", "lastname", "last"),
+            "zipcode": ("zip", "Zipcode"),
         }
         # Loop through the non manadatory columns and rename with psql table column
-        #print(dtframe.columns)
+        # print(dtframe.columns)
         for mkey, mvalue in rename_dict.items():
             for colname in mvalue:
                 if colname in dtframe.columns:
-                    dtframe.rename(columns= {colname:mkey},inplace = True)
+                    dtframe.rename(columns={colname: mkey}, inplace=True)
 
     def verifymissingmandatorycolumns(self, dtframe):
         # ASSUMPTION :- cvs files will have columns name like this else will consider these columns are not available
-       
-        columndict = {"call_datetime":("Call Date EST", "created_at"),
-                       "disposition":("Disposition","status"),
-                       "phonenumber":("Phone Number","phone1")}
+
+        columndict = {
+            "call_datetime": ("Call Date EST", "created_at"),
+            "disposition": ("Disposition", "status"),
+            "phonenumber": ("Phone Number", "phone1"),
+        }
         result = ""
         # Loop through the manadatory columns and verify if those missing in csv
         for mkey, mvalue in columndict.items():
@@ -55,9 +57,9 @@ class csvhandler:
                     reqcols += colname
                 else:
                     reqcols = ""
-                    dtframe.rename(columns= {colname:mkey},inplace = True)
-                    continue
-            if reqcols !="":
+                    dtframe.rename(columns={colname: mkey}, inplace=True)
+                    break
+            if reqcols != "":
                 if result != "":
                     result += ", "
                 result += reqcols
@@ -116,9 +118,9 @@ class csvhandler:
             uri = os.environ.get("DB_URL")
             print(uri)
             conn = psycopg2.connect(
-                #uri
+                # uri
                 "postgresql://postgres:admin@localhost/fileparser"
-            )   
+            )
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
             sys.exit(1)
@@ -206,9 +208,7 @@ try:
     for ifile in impfiles:  # Loop through the folder where files are present
         impfilename = r"" + impfolder + "\\" + ifile
         if impconn:
-            if not ch.isfileareadyimported(
-                ifile, impconn
-            ):  
+            if not ch.isfileareadyimported(ifile, impconn):
                 # Verify file is already imported
                 csvdf = ch.isvalidcsvandgetdf(impfilename)  # get the data from csv file
                 if not csvdf.empty:
