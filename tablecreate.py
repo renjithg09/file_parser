@@ -13,9 +13,9 @@ def createtables(conn):
         TABLES = {}
         TABLES["call_log"] = (
             "CREATE TABLE IF NOT EXISTS public.call_log"
-            "(call_datetime timestamp,"
-            "disposition VARCHAR(100),"
-            "phonenumber VARCHAR(25),"
+            "(call_datetime timestamp NOT NULL,"
+            "disposition VARCHAR(100) NOT NULL,"
+            "phonenumber VARCHAR(25) NOT NULL,"
             "first_name VARCHAR(100),"
             "last_name VARCHAR(100),"
             "address1 VARCHAR(150),"

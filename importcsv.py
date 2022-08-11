@@ -8,6 +8,9 @@ import tablecreate
 
 
 class csvhandler:
+    def __init__(self):
+        self.totalrowcount = 0
+
     # List of tables where data to be imported
     table_list = ("public.call_log", "public.imported_files")
     # List of column where data to be imported
@@ -133,6 +136,7 @@ class csvhandler:
         # Get the csv data, pass na_filter false to hand NA string
         calldata = pd.read_csv(csvfilename, na_filter=False)
         df = pd.DataFrame(calldata)
+
         # Verify any manadatory columns missig in the csv file
         validationresult = self.verifymissingmandatorycolumns(df)
         if validationresult != "":
@@ -151,15 +155,23 @@ class csvhandler:
                 :,
                 df.columns.isin(self.call_log_column_list),
             ]
+            ch.totalrowcount = len(df)
+            # Don't consider toimport if below fields are empty
+            df = df[df.call_datetime != ""]
+            df = df[df.disposition != ""]
+            df = df[df.phonenumber != ""]
+            ch.importrowcount = len(df)
+
         return df
 
     def ImportcsvData(self, conn, filename, df):
         """
         Using psycopg2.extras.execute_values() to insert the dataframe
         """
-        totalRow = len(df)
+
         # Create a list of tupples from the dataframe values
         tuples = [tuple(x) for x in df.values.tolist()]
+
         # Comma-separated dataframe columns
         cols = ",".join(list(df.columns))
         # SQL query to execute
@@ -178,7 +190,7 @@ class csvhandler:
             self.table_list[1],
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             filename,
-            totalRow,
+            ch.totalrowcount,
             impRow,
         )
         try:
