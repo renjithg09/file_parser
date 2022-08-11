@@ -136,6 +136,7 @@ class csvhandler:
         # Get the csv data, pass na_filter false to hand NA string
         calldata = pd.read_csv(csvfilename, na_filter=False)
         df = pd.DataFrame(calldata)
+        ch.totalrowcount = 0
 
         # Verify any manadatory columns missig in the csv file
         validationresult = self.verifymissingmandatorycolumns(df)
@@ -160,8 +161,6 @@ class csvhandler:
             df = df[df.call_datetime != ""]
             df = df[df.disposition != ""]
             df = df[df.phonenumber != ""]
-            ch.importrowcount = len(df)
-
         return df
 
     def ImportcsvData(self, conn, filename, df):
