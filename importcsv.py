@@ -6,6 +6,7 @@ import psycopg2.extras as extras
 from datetime import datetime
 import tablecreate
 
+
 def main():
     ch = csvhandler()
 
@@ -21,7 +22,9 @@ def main():
             if impconn:
                 if not ch.isfileareadyimported(ifile, impconn):
                     # Verify file is already imported
-                    csvdf = ch.isvalidcsvandgetdf(impfilename)  # get the data from csv file
+                    csvdf = ch.isvalidcsvandgetdf(
+                        impfilename
+                    )  # get the data from csv file
                     if not csvdf.empty:
                         ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
 
@@ -144,7 +147,7 @@ class csvhandler:
             print(uri)
             conn = psycopg2.connect(
                 uri
-                #"postgresql://postgres:admin@localhost/fileparser"
+                # "postgresql://postgres:admin@localhost/fileparser"
             )
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -228,5 +231,6 @@ class csvhandler:
 
     def closedbconnection(self):
         conn.close()
+
 
 main()
