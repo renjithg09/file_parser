@@ -2,6 +2,7 @@ version: '3.8'
 services:
   fileparser:
     build: ./
+    network_mode: bridge
     environment:
       - DB_URL=postgresql://postgres:admin@db:5432/fileparser  
   db:
@@ -10,6 +11,7 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    network_mode: bridge
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin

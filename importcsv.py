@@ -6,6 +6,28 @@ import psycopg2.extras as extras
 from datetime import datetime
 import tablecreate
 
+def main():
+    ch = csvhandler()
+
+    impfolder = "/app/data"
+
+    impfiles = ch.getthefiles(impfolder)
+
+    impconn = ch.dbconnect()  # connect the db
+    tablecreate.createtables(impconn)
+    try:
+        for ifile in impfiles:  # Loop through the folder where files are present
+            impfilename = r"" + impfolder + "/" + ifile
+            if impconn:
+                if not ch.isfileareadyimported(ifile, impconn):
+                    # Verify file is already imported
+                    csvdf = ch.isvalidcsvandgetdf(impfilename)  # get the data from csv file
+                    if not csvdf.empty:
+                        ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
+
+    finally:
+        ch.closedbconnection  # close the conection
+
 
 class csvhandler:
     def __init__(self):
@@ -207,25 +229,4 @@ class csvhandler:
     def closedbconnection(self):
         conn.close()
 
-
-ch = csvhandler()
-
-impfolder = "/app/data"
-#impfolder = ".\data"
-
-impfiles = ch.getthefiles(impfolder)
-
-impconn = ch.dbconnect()  # connect the db
-tablecreate.createtables(impconn)
-try:
-    for ifile in impfiles:  # Loop through the folder where files are present
-        impfilename = r"" + impfolder + "\\" + ifile
-        if impconn:
-            if not ch.isfileareadyimported(ifile, impconn):
-                # Verify file is already imported
-                csvdf = ch.isvalidcsvandgetdf(impfilename)  # get the data from csv file
-                if not csvdf.empty:
-                    ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
-
-finally:
-    ch.closedbconnection  # close the conection
+main()
