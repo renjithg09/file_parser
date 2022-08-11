@@ -18,11 +18,11 @@ def createtables(conn):
             "phonenumber VARCHAR(25),"
             "first_name VARCHAR(100),"
             "last_name VARCHAR(100),"
-            "zipcode VARCHAR(10),"
             "address1 VARCHAR(150),"
             "address2 VARCHAR(150),"
             "city VARCHAR(100),"
-            "state VARCHAR(100))"
+            "state VARCHAR(100),"
+            "zipcode VARCHAR(10))"
         )
 
         TABLES["imported_files"] = (
@@ -34,14 +34,12 @@ def createtables(conn):
         )
 
         for name, ddl in TABLES.items():
-            print("Creating table {}: ".format(name), end="")
+            print("Creating table {}: ".format(name))
             cursor.execute(ddl)
 
         conn.commit()
     finally:
         cursor.close()
-        conn.close()
-
 
 # print(os.environ)
 # createtables()

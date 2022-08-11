@@ -23,42 +23,60 @@ class csvhandler:
         "City",
         "State",
     )
-    # List of columns which are not in format
-    rename_dict = {
-        "Call Date EST": "call_datetime",
-        "Disposition": "disposition",
-        "Phone Number": "phonenumber",
-        "First Name": "first_name",
-        "Last Name": "last_name",
-    }
+
+    def renamenonmandatorycolumns(self, dtframe):
+        # List of non mandatory columns which are not in format. Given csv files has these many different type format hence included these.  
+        rename_dict = {
+            "first_name":("First Name","firstname","first"),
+            "last_name":("Last Name", "lastname","last"),
+            "zipcode":("zip","Zipcode")
+        }
+        # Loop through the non manadatory columns and rename with psql table column
+        #print(dtframe.columns)
+        for mkey, mvalue in rename_dict.items():
+            for colname in mvalue:
+                if colname in dtframe.columns:
+                    dtframe.rename(columns= {colname:mkey},inplace = True)
 
     def verifymissingmandatorycolumns(self, dtframe):
         # ASSUMPTION :- cvs files will have columns name like this else will consider these columns are not available
-        columnlist = ("Call Date EST", "Disposition", "Phone Number")
+       
+        columndict = {"call_datetime":("Call Date EST", "created_at"),
+                       "disposition":("Disposition","status"),
+                       "phonenumber":("Phone Number","phone1")}
         result = ""
-        # Loop through the manadatory columns and get if those missing in csv
-        for mandatorycolumns in columnlist:
-            if mandatorycolumns not in dtframe:
+        # Loop through the manadatory columns and verify if those missing in csv
+        for mkey, mvalue in columndict.items():
+            reqcols = ""
+            for colname in mvalue:
+                if colname not in dtframe.columns:
+                    if reqcols != "":
+                        reqcols += "/"
+                    reqcols += colname
+                else:
+                    reqcols = ""
+                    dtframe.rename(columns= {colname:mkey},inplace = True)
+                    continue
+            if reqcols !="":
                 if result != "":
                     result += ", "
-                result += str(mandatorycolumns)
-
+                result += reqcols
         return result
 
     # Nonmandatory columns can be missed in csv file, if so create those with empty data
     def createmissingnonmandatorycolumns(self, dtframe):
         # ASSUMPTION :- cvs files will have columns name like this else will consider these columns are not available
         columnlist = (
-            "First Name",
-            "Last Name",
-            "Address1",
-            "Address2",
-            "City",
-            "State",
-            "Zipcode",
+            "first_name",
+            "last_name",
+            "address1",
+            "address2",
+            "city",
+            "state",
+            "zipcode",
         )
         for nonmandatorycolumns in columnlist:
-            if nonmandatorycolumns not in dtframe:
+            if nonmandatorycolumns not in dtframe.columns:
                 dtframe.insert(0, nonmandatorycolumns, None)
 
     # Get the files for folders
@@ -98,9 +116,9 @@ class csvhandler:
             uri = os.environ.get("DB_URL")
             print(uri)
             conn = psycopg2.connect(
-                uri
-                # "postgresql://postgres:admin@0.0.19.137/fileparser"
-            )  # "postgresql://postgres:admin@localhost/fileparser"
+                #uri
+                "postgresql://postgres:admin@localhost/fileparser"
+            )   
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
             sys.exit(1)
@@ -122,10 +140,10 @@ class csvhandler:
             # empty df to be returned if validation is not successful to don't import
             df = pd.DataFrame()
         else:
-            # if vlidation is successfull create missing nonmandatory fields if any
-            self.createmissingnonmandatorycolumns(df)
             # Rename the df columns as per db column name to import
-            df = df.rename(columns=self.rename_dict)
+            self.renamenonmandatorycolumns(df)
+            # create missing nonmandatory fields if any
+            self.createmissingnonmandatorycolumns(df)
             # Only select required columns from df to import
             df = df.loc[
                 :,
@@ -190,9 +208,11 @@ try:
         if impconn:
             if not ch.isfileareadyimported(
                 ifile, impconn
-            ):  # Verify file is already imported
+            ):  
+                # Verify file is already imported
                 csvdf = ch.isvalidcsvandgetdf(impfilename)  # get the data from csv file
                 if not csvdf.empty:
                     ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
+
 finally:
     ch.closedbconnection  # close the conection
