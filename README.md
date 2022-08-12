@@ -1,5 +1,5 @@
 # Import-data-into-PostgreSQL-from-CSV-file-using-python
-
+<img src="https://github.com/renjithg09/file_parser/blob/master/image_csv.png" width="50%" height="50%">
 
 ## Introduction:
 Our aim is to import data into PostgreSQL database from all CSV files which are present in a folder.
