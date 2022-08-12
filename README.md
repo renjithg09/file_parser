@@ -7,7 +7,7 @@ Our aim is to import data into PostgreSQL database from all CSV files which are 
 ## Prerequisites
 This would be running in docker.
 
-## Table details
+## Table details:
 
 call_log :
 Call Date/Time, Call Disposition, Phone Number, First Name, Last Name, Address1, Address2, City, State, Zip data will be imported from csv file.
@@ -15,14 +15,28 @@ Call Date/Time, Call Disposition, Phone Number, First Name, Last Name, Address1,
 imported_files:
 imported_datetime, filename, total_rowcount, imported_rowcount will be inserted while importhing above data for tracking purpose/
 
-## Running the tests
+## File/Folder details:
+
+requirements.txt : It consists, packages to be pip installed.
 
 tablecreate.py : In this python file, we are creating tables (if already not exist) on database fileparser.We are keeping our PostgreSQL queries into a dictionary named"TABLES={}"
 By using for loop we are executing the queries into database for creating table.
 
-importcsv.py: In this python file, we are importing required data from CSV files to call_log table. Also insert the imported file information  into imported_files table for tracking purpose.
+importcsv.py : In this python file, we are importing required data from CSV files to call_log table. Also insert the imported file information  into imported_files table for tracking purpose.
 
-steps are below.
+docker-compose.yml : environement variable and connection to postgres db.
+
+dockerfile : build and run the required steps/file.
+
+results_screenshots : It consists, test resullts screen shots
+
+data: csv files are present in this folder.
+
+README.md : describes the whole project.
+
+image_csv.png : image to display in README.md 
+
+## Running the tests:
 
 1. Get all csv files from the folder.
 3. Connect to the db by using connection string URI from the environement variable.
