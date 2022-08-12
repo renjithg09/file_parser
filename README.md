@@ -66,7 +66,7 @@ Reslults screen shots are available at https://github.com/renjithg09/file_parser
 2-docker_connected_to_db : connected to psql and queried the data.
 3_docker_imported_data.png : queried all imported data i.e. from call_log & imported_files
 4_docker_GUI_run.png : run results from GUI
-5_docker_GUI_containers.png : container information form GUI
+5_docker_GUI_containers.png : container information from GUI
 
 
 ## Future works
