@@ -2,7 +2,7 @@ import psycopg2
 import os
 
 
-def createtables(conn):
+def create_tables(conn):
 
     # uri = os.environ.get("PGCONNECTION")
     # uri = os.environ.get("PGCONNECTION")
@@ -34,7 +34,7 @@ def createtables(conn):
         )
 
         for name, ddl in TABLES.items():
-            print("Creating table {}: ".format(name))
+            print("Creating table {} (if doesn't exist): ".format(name))
             cursor.execute(ddl)
 
         conn.commit()
@@ -43,4 +43,4 @@ def createtables(conn):
 
 
 # print(os.environ)
-# createtables()
+# create_tables()

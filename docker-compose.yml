@@ -1,11 +1,11 @@
-version: '3.8'
+version: '3.9'
 services:
   fileparser:
     build: ./
     environment:
       - DB_URL=postgresql://postgres:admin@db:5432/fileparser  
   db:
-    image: postgres
+    image: postgres:12-alpine
     ports: 
       - 5432:5432
     volumes:

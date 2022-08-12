@@ -6,7 +6,8 @@ import psycopg2.extras as extras
 from datetime import datetime
 import tablecreate
 
-class csvhandler:
+
+class CsvHandler:
     def __init__(self):
         self.totalrowcount = 0
 
@@ -33,14 +34,14 @@ class csvhandler:
             "last_name": ("Last Name", "lastname", "last"),
             "zipcode": ("zip", "Zipcode"),
         }
-        # Loop through the non manadatory columns and rename with psql table column
+        # Loop through the non manadatory columns and rename to align with psql table column
         # print(dtframe.columns)
         for mkey, mvalue in rename_dict.items():
             for colname in mvalue:
                 if colname in dtframe.columns:
                     dtframe.rename(columns={colname: mkey}, inplace=True)
 
-    def verifymissingmandatorycolumns(self, dtframe):
+    def verify_missing_mandatory_columns(self, dtframe):
         # ASSUMPTION :- cvs files will have columns name like this else will consider these columns are not available
 
         columndict = {
@@ -68,7 +69,7 @@ class csvhandler:
         return result
 
     # Nonmandatory columns can be missed in csv file, if so create those with empty data
-    def createmissingnonmandatorycolumns(self, dtframe):
+    def create_missing_nonmandatory_columns(self, dtframe):
         # ASSUMPTION :- cvs files will have columns name like this else will consider these columns are not available
         columnlist = (
             "first_name",
@@ -84,12 +85,12 @@ class csvhandler:
                 dtframe.insert(0, nonmandatorycolumns, None)
 
     # Get the files for folders
-    def getthefiles(self, folderpath):
+    def get_the_files(self, folderpath):
         # list file and directories
         return os.listdir(folderpath)
 
     # Check file is already imported
-    def isfileareadyimported(self, filename, conn):
+    def is_file_aready_imported(self, filename, conn):
         # Prepare the sql to find importing file is already imported
         mysql = "SELECT 1 FROM {0} WHERE filename ='{1}'".format(
             self.table_list[1], filename
@@ -111,26 +112,26 @@ class csvhandler:
             return False
         cursor.close()
 
-    def dbconnect(self):
+    def db_connect(self):
         """Connect to the PostgreSQL database server"""
         conn = None
         try:
             # connect to the PostgreSQL server
-            #print("Connecting to the PostgreSQL database...")
-            # Get the ps URI from env variable 
+            # print("Connecting to the PostgreSQL database...")
+            # Get the ps URI from env variable
             uri = os.environ.get("DB_URL")
-            #print(uri)
+            # print(uri)
             conn = psycopg2.connect(
                 uri
-                # "postgresql://postgres:admin@localhost/fileparser"
+                 #"postgresql://postgres:admin@localhost/fileparser"
             )
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
             sys.exit(1)
-        #print("Connection successful")
+        # print("Connection successful")
         return conn
 
-    def isvalidcsvandgetdf(self, csvfilename):
+    def is_valid_csv_and_get_df(self, csvfilename):
         # Get the file name from whole path
         onlyfilename = os.path.split(csvfilename)[1]
         # Get the csv data, pass na_filter false to hand NA string
@@ -139,7 +140,7 @@ class csvhandler:
         ch.totalrowcount = 0
 
         # Verify any manadatory columns missig in the csv file
-        validationresult = self.verifymissingmandatorycolumns(df)
+        validationresult = self.verify_missing_mandatory_columns(df)
         if validationresult != "":
             print(
                 "{0} not find in the file {1}.".format(validationresult, onlyfilename)
@@ -150,20 +151,20 @@ class csvhandler:
             # Rename the df columns as per db column name to import
             self.renamenonmandatorycolumns(df)
             # create missing nonmandatory fields if any
-            self.createmissingnonmandatorycolumns(df)
+            self.create_missing_nonmandatory_columns(df)
             # Only select required columns from df to import
             df = df.loc[
                 :,
                 df.columns.isin(self.call_log_column_list),
             ]
             ch.totalrowcount = len(df)
-            # Don't consider toimport if below fields are empty
+            # Don't consider to import if below fields are empty
             df = df[df.call_datetime != ""]
             df = df[df.disposition != ""]
             df = df[df.phonenumber != ""]
         return df
 
-    def ImportcsvData(self, conn, filename, df):
+    def import_csv_data(self, conn, filename, df):
         """
         Using psycopg2.extras.execute_values() to insert the dataframe
         """
@@ -204,28 +205,29 @@ class csvhandler:
         print("{} file Data imported successfully.".format(filename))
         cursor.close()
 
-    def closedbconnection(self):
+    def close_db_connection(self):
         conn.close()
 
-ch = csvhandler()
+
+ch = CsvHandler()
 
 impfolder = "/app/data"
 
-impfiles = ch.getthefiles(impfolder)
+impfiles = ch.get_the_files(impfolder)
 
-impconn = ch.dbconnect()  # connect the db
-tablecreate.createtables(impconn)
+impconn = ch.db_connect()  # connect the db
+tablecreate.create_tables(impconn)
 try:
     for ifile in impfiles:  # Loop through the folder where files are present
         impfilename = r"" + impfolder + "/" + ifile
         if impconn:
-            if not ch.isfileareadyimported(ifile, impconn):
+            if not ch.is_file_aready_imported(ifile, impconn):
                 # Verify file is already imported
-                csvdf = ch.isvalidcsvandgetdf(
+                csvdf = ch.is_valid_csv_and_get_df(
                     impfilename
                 )  # get the data from csv file
                 if not csvdf.empty:
-                    ch.ImportcsvData(impconn, ifile, csvdf)  # import data to db
+                    ch.import_csv_data(impconn, ifile, csvdf)  # import data to db
 
 finally:
-    ch.closedbconnection  # close the conection
+    ch.close_db_connection  # close the conection
