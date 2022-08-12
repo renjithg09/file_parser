@@ -27,7 +27,7 @@ class CsvHandler:
         "State",
     )
 
-    def renamenonmandatorycolumns(self, dtframe):
+    def rename_non_mandatory_columns(self, dtframe):
         # List of non mandatory columns which are not in format. Given csv files has these many different type format hence included these.
         rename_dict = {
             "first_name": ("First Name", "firstname", "first"),
@@ -149,7 +149,7 @@ class CsvHandler:
             df = pd.DataFrame()
         else:
             # Rename the df columns as per db column name to import
-            self.renamenonmandatorycolumns(df)
+            self.rename_non_mandatory_columns(df)
             # create missing nonmandatory fields if any
             self.create_missing_nonmandatory_columns(df)
             # Only select required columns from df to import

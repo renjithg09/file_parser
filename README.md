@@ -24,7 +24,30 @@ By using for loop we are executing the queries into database for creating table.
 11. While importing if mandatory fields data is empty then avoiding those rows. 
 
  
+## Interpretation and Assumptions
+
+csv files colum header names can be different for e.g. "disposition" colum name can be "status". Based on the  given csv files (which are in data folder) all names are handled. If we will have more name differences then add those to rename_dict,columndict dictionaries.i.e. values other than these dict will be considered 'unknown'.
+
+regarding mandotry fields (Call Date/Time, Call Disposition, Phone Number,): Verified these columns are availabe in the csv file to import the file data. Also verified, these columns are available however the data is empty(""),  if it is empty then will skip that row to be imported.
+
+Imported files are tracking in imported_files table. Currently verifying with file name to avoide duplicate import.In future we can do data unique comparing as well to avoid import duplicate file even it has a different  file name.   
+
+Importing csv data to db in a single command i.e. not in a loop hence if any exception comes then that whole file import will be skipped and will try to import next file.(already above validation is in place exception could be some other reason.Note: Based on any future requirement we can change this row wise importing i.e. if any row has exception then skip and try to import other rows. )
+
+Most of the exceptions are handled still there could be some exceptions can be handled in future like folder not avaialble etc.
+
+Based on the end user requirements messages can be changed.
+
+
+
 ## Result screenshots
 
 Reslults screen shots are available at https://github.com/renjithg09/file_parser/tree/master/results_screenshots
+
+
+## Future works
+
+py unit test cases can be added.
+Setup a CI/CD pipeline.
+Add the ability to read from Google Cloud Storage.
 
