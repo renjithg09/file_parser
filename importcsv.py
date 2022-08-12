@@ -157,6 +157,7 @@ class CsvHandler:
                 :,
                 df.columns.isin(self.call_log_column_list),
             ]
+            # Get the total row count we have in csv before removing invalid rows for tracking purpose
             ch.totalrowcount = len(df)
             # Don't consider to import if below fields are empty
             df = df[df.call_datetime != ""]
