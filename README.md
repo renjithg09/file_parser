@@ -59,11 +59,13 @@ CSV files column header names can be different for e.g. "disposition" column nam
 
 Regarding mandatory fields (Call Date/Time, Call Disposition, Phone Number,): Verified these columns are available in the csv file to import the file data. Also verified, these columns are available however the data is empty(""),  if it is empty then will skip that row to be imported.
 
-Imported files are tracking in imported_files table. Currently verifying with file name to avoid duplicate import.In future we can do data unique comparing as well to avoid import duplicate file even it has a different  file name.   
+Imported files are tracking in imported_files table. Currently verifying with file name (case sensitive now can be changed to case insensitive if required) to avoid duplicate import.In future we can do data unique comparing as well to avoid import duplicate file even it has a different  file name.   
 
 Importing csv data to db in a single command i.e. not in a loop hence if any exception comes then that whole file import will be skipped and will try to import next file.(already above validation is in place exception could be some other reason.Note: Based on any future requirement we can change this row wise importing i.e. if any row has exception then skip and try to import other rows. )
 
 Text 'NA' values are handled while reading from csv to avoid the 'NA' to import as NaN.
+
+Many other things also can be done like imported files move to another folder(like processed), show reason for not exporting row (if any) etc. 
 
 This project runs in docker.
 
