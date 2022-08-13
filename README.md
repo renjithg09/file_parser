@@ -79,15 +79,23 @@ Based on the end user requirements messages can be changed.
 Results screen shots are available at https://github.com/renjithg09/file_parser/tree/master/results_screenshots
 
 0_docker_builid.png : docker compose building.
+
 1_successfully_ran_reslut.png : psql connection successful and data imported successfully.
+
 2-docker_connected_to_db : connected to psql and queried the data.
-3_docker_imported_data.png : queried all imported data i.e. from call_log & imported_files
-4_docker_GUI_run.png : run results from GUI
-5_docker_GUI_containers.png : container information from GUI
+
+3_docker_imported_data.png : queried all imported data i.e. from call_log & imported_files.
+
+4_docker_GUI_run.png : run results from GUI.
+
+5_docker_GUI_containers.png : container information from GUI.
 
 
 ## Future works
 
 py unit test cases can be added.
+
 Setup a CI/CD pipeline.
+
 Add the ability to read from Google Cloud Storage.
+
